@@ -1,18 +1,22 @@
 let timer;
 let isRunning = false;
-let minutes = 25;
+let isWorkInterval = true;
+let workMinutes = 25;
+let breakMinutes = 5;
+let minutes = workMinutes;
 let seconds = 0;
 
 const minutesDisplay = document.getElementById("minutes");
 const secondsDisplay = document.getElementById("seconds");
 const timerCircle = document.getElementById("timer-circle");
+const workTimeInput = document.getElementById("work-time");
+const breakTimeInput = document.getElementById("break-time");
 
 const updateDisplay = () => {
   minutesDisplay.textContent = String(minutes).padStart(2, "0");
   secondsDisplay.textContent = String(seconds).padStart(2, "0");
 };
 
-// Add a bounce animation to the timer circle
 const animateCircle = () => {
   timerCircle.classList.add("bounce");
   setTimeout(() => timerCircle.classList.remove("bounce"), 400);
@@ -21,13 +25,17 @@ const animateCircle = () => {
 const startTimer = () => {
   if (!isRunning) {
     isRunning = true;
-    animateCircle(); // Add animation when starting
+    animateCircle();
     timer = setInterval(() => {
       if (seconds === 0) {
         if (minutes === 0) {
           clearInterval(timer);
           isRunning = false;
-          alert("Time's up!");
+          isWorkInterval = !isWorkInterval;
+          alert(isWorkInterval ? "Time for a break!" : "Back to work!");
+          minutes = isWorkInterval ? workMinutes : breakMinutes;
+          seconds = 0;
+          updateDisplay();
           return;
         } else {
           minutes--;
@@ -44,16 +52,19 @@ const startTimer = () => {
 const pauseTimer = () => {
   clearInterval(timer);
   isRunning = false;
-  animateCircle(); // Add animation when pausing
+  animateCircle();
 };
 
 const resetTimer = () => {
   clearInterval(timer);
   isRunning = false;
-  minutes = 25;
+  isWorkInterval = true;
+  workMinutes = parseInt(workTimeInput.value, 10) || 25;
+  breakMinutes = parseInt(breakTimeInput.value, 10) || 5;
+  minutes = workMinutes;
   seconds = 0;
   updateDisplay();
-  animateCircle(); // Add animation when resetting
+  animateCircle();
 };
 
 document.getElementById("start").addEventListener("click", startTimer);
